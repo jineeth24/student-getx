@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:student_management/controllers/student_controller.dart';
 import 'package:student_management/core/constants.dart';
+import 'package:student_management/data/model/student_model.dart';
 import 'package:student_management/presentation/home/widgets/image_widget.dart';
+import 'package:uuid/uuid.dart';
 //import 'package:image_picker_gallery_camera/image_picker_gallery_camera.dart';
 
 class FormWidget extends StatefulWidget {
@@ -20,6 +24,9 @@ class _FormWidgetState extends State<FormWidget> {
   final phoneController = TextEditingController();
   final schoolController = TextEditingController();
   File? selectedImage;
+
+ // StudentController sController=Get.put(StudentController());
+  StudentController sController=Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +60,6 @@ class _FormWidgetState extends State<FormWidget> {
                     ),
             ),
           ),
-
-
           kheight,
           TextFormField(
             controller: nameController,
@@ -71,7 +76,7 @@ class _FormWidgetState extends State<FormWidget> {
           ),
           kheight,
           TextFormField(
-            controller: ageController,
+            controller:   ageController,
             keyboardType: TextInputType.number,
             decoration: const InputDecoration(
               label: Text(
@@ -108,7 +113,7 @@ class _FormWidgetState extends State<FormWidget> {
           kheight,
           TextFormField(
             controller: schoolController,
-            keyboardType: TextInputType.number,
+            keyboardType: TextInputType.name,
             decoration: const InputDecoration(
               label: Text(
                 "enter school name",
@@ -134,7 +139,9 @@ class _FormWidgetState extends State<FormWidget> {
               onSubmit();
             },
             child: const Text("Submit"),
-          ),
+          ), 
+          //Obx(() => Text( studentList.length.toString())),
+         // TextButton(onPressed: (){sController.getAllStudents();}, child: Text("get")),
         ]),
       ),
     );
@@ -142,21 +149,37 @@ class _FormWidgetState extends State<FormWidget> {
 
   void onSubmit() {
     if (formKey.currentState!.validate()) {
-      final name = nameController.text;
-      final age = ageController.text;
-      final phone = phoneController.text;
-      final school = schoolController.text;
-      print("$name $age $phone $school");
-      if (selectedImage == null) {
+      final sid = const Uuid().v4(); //create a uniq id
+      final sname = nameController.text;
+      final sage = ageController.text;
+      final sphone = phoneController.text;
+      final sschool = schoolController.text;
+      if (selectedImage != null) {
+        final imagepath = selectedImage!.path;
+
+        final student = StudentModel(
+          id: sid,
+          name: sname,
+          age: sage,
+          phone: sphone,
+          school: sschool,
+          image: imagepath,
+        );
+        print(student.id);
+        sController.addStudent(student);//call using controller
+        //clear all data in the form
+        //nameController.clear();
+      }
+      else if (selectedImage == null) {
         //return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 1),
-              content: Text('please add your picture!')),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 1),
+            content: Text('please add your picture!'),
+          ),
         );
       } else {
-//save to database
 
         setState(() {
           selectedImage = null;

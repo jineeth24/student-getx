@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:student_management/core/constants.dart';
 import 'package:student_management/presentation/home/widgets/registration_form_widget.dart';
 import 'package:student_management/presentation/student_list/student_list_screen.dart';
 import 'package:student_management/presentation/student_details/detail_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+import '../../controllers/student_controller.dart';
 
+class HomeScreen extends StatelessWidget {
+   HomeScreen({super.key});
+final StudentController controller=Get.put(StudentController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,10 +33,13 @@ class HomeScreen extends StatelessWidget {
                   child: TextButton(
                     child: Text("ViewStudentRecord"),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx){return const StudentListScreen();})) ; 
+                      
+                      Navigator.of(context).push(MaterialPageRoute(builder: (ctx){return  StudentListScreen();})) ; 
                     },
                   ),
                 ),
+                Obx(() => Text(controller.studentList.length.toString())),
+               
                 //StudentList,Widget(),
               ],
             ),
